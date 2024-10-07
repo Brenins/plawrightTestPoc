@@ -1,7 +1,6 @@
 import {test, expect} from '@playwright/test';
 
 import * as dotenv from 'dotenv';
-import * as timers from "node:timers";
 
 dotenv.config();  // Load .env file
 
@@ -22,7 +21,20 @@ test.beforeAll(async ({ browser }) => {
     await page.goto(process.env.BASE_URL);
 });
 
-test ('Test genérico',async () =>{
-    const taskName = page.locator('input[placeholder="Add new task"]');
+test('Verificando titulo TODO', async() =>{
+    await expect(page.locator('h1')).toHaveText('TODO', {timeout: 15000});
+});
+
+test ('Preenchendo Campo',async () =>{
+    const taskName = page.locator('input[placeholder="Add new task"]', {timeout: 15000});
     await taskName.fill('Olá Mundo');
+    const addButton = page.locator('button[type="submit"]')
+    await expect(addButton).toBeVisible();
+    await expect(addButton).toHaveText('Add');
+    await addButton.click();
+});
+
+test ('Verificando se o que foi criado está aparecendo',async () =>{
+    const taskName = page.getByTitle('Olá Mundo',{timeout: 15000});
+    await expect(taskName).toBeVisible();
 });
